@@ -1,10 +1,14 @@
 /* Simulador de cajero automático */
 
 let continuar = true
-let saldo = 500000
-let numSecreto = 123456
 
-function consultarSaldo() {
+function cancelar() {
+    console.log("Cancelar operación")
+    alert('Operación cancelada. Retire su tarjeta')
+    continuar = false
+}
+
+function consultarSaldo(saldo) {
     console.log('Consulta saldo')
     alert('Su saldo es : $' + saldo)
 }
@@ -20,14 +24,16 @@ function noDisponible() {
     alert('Función no disponible')
 }
 
-function cambiarClave() {
+function cambiarClave(cliente) {
     console.log('Cambiar clave')
-    numSecreto = prompt('Ingrese su nuevo número secreto') //en futuras versiones implementar validación clave numérica de 4 dígitos
-    console.log('Nuevo número secreto: ' + numSecreto)
+    nuevoPassword = prompt('Ingrese su nuevo número secreto') //en futuras versiones implementar validación clave numérica de 4 dígitos
+    if (id !== null && id !== '') cliente.password = nuevoPassword
+    else alert('Ingrese un número correcto')
+    console.log(cliente.password)
     alert('Su número secreto ha sido cambiado con éxito.')
 }
 
-function cuentaCorriente() {
+function cuentaCorriente(cliente) {
     console.log('Cuenta Corriente')
     let opcionCorr = prompt('Por favor, seleccione la operación que desea realizar \n 1: Giro rápido por $5000 \n 2: Giro por otro monto \n 3: Consultar Saldo \n 0: Cancelar operación')
     let montoGiro
@@ -36,40 +42,37 @@ function cuentaCorriente() {
             case '1':
                 console.log('Giro rápido por $5000')
                 montoGiro = 5000
-                girarDinero(montoGiro)
-                nuevaOperacion()
+                cliente.cuentaCorr.saldo = girarDinero(cliente.cuentaCorr.saldo, montoGiro)
+                nuevaOperacion(cliente)
                 break
             case '2':
-                console.log('Giro rápido por otro monto')
-                montoGiro = prompt('Ingrese el monto que desea girar. Tope máximo: $' + saldo)
-                //en versiones posteriores se implementará if para validar que el monto a girar sea menor al saldo
-                girarDinero(montoGiro)
-                nuevaOperacion()
+                console.log('Giro por otro monto')
+                montoGiro = prompt('Ingrese monto a girar')
+                // por agregar: mensaje de error cuando el monto es 0
+                if (montoGiro <= cliente.cuentaCorr.saldo ) cliente.cuentaCorr.saldo = girarDinero(cliente.cuentaCorr.saldo, montoGiro)
+                else alert('Monto inválido. No puede exceder el saldo disponible.') 
+                nuevaOperacion(cliente)
                 break
             case '3':
-                console.log('Consultar saldo')
-                consultarSaldo()
-                nuevaOperacion()
+                consultarSaldo(cliente.cuentaCorr.saldo)
+                nuevaOperacion(cliente)
                 break
             case '0':
-                console.log("Cancelar operación")
                 despedida()
                 continuar = false
                 break
             case null:
-                console.log("Cancelar operación")
-                alert('Operación cancelada. Retire su tarjeta')
-                continuar = false
+                cancelar()
                 break
             default:
                 console.log('Opción no valida')
-                alert('Ingrese una opción válida')
+                alert('Ingrese una opción válida.')
                 break
         }
     } while (continuar === true)
 }
 
-function girarDinero(montoGiro) {
+function girarDinero(saldo, montoGiro) {
     console.log(montoGiro)
     saldo -= montoGiro
     console.log('Giro por $' + montoGiro + '. Saldo restante: $' + saldo)
@@ -77,18 +80,17 @@ function girarDinero(montoGiro) {
     return saldo
 }
 
-function nuevaOperacion(continuar) {
+function nuevaOperacion(cliente) {
     continuar = prompt('Desea realizar otra operación? \n 1: Sí \n 2: No')
     switch (continuar) {
         case '1':
-            menuPrincipal()
+            menuPrincipal(cliente)
             break
         case '2': despedida()
             continuar = false
             break
         case '':
-            console.log('Continuar :' + continuar)
-            menuPrincipal()
+            menuPrincipal(cliente)
             break
         case null:
             despedida()
@@ -98,26 +100,28 @@ function nuevaOperacion(continuar) {
     }
 }
 
-function menuPrincipal() {
+function menuPrincipal(cliente) {
+    console.log('Acceso cliente id: ' + cliente.id)
     do {
         let opcion = prompt('Bienvenido. Por favor, seleccione el producto que desea operar\n 1: Cuenta Corriente\n 2: Cuenta Vista (No disponible) \n 3: Cambiar número secreto\n 0: Salir')
         switch (opcion) {
             case '1':
-                cuentaCorriente()
+                cuentaCorriente(cliente)
                 break
-            case '2': //Cuenta Vista. Función no disponible por el momento
+            case '2': 
+            //por agregar: cuentaVista(). Misma lógica que cuentaCorriente()
                 noDisponible()
                 break
             case '3':
-                cambiarClave()
+                cambiarClave(cliente)
+                //Por agregar: despedida alternativa en caso de cambio de clave (evento)
+                despedida() 
                 break
             case '0':
-                alert('Operación cancelada. Retire su tarjeta')
-                continuar = false
+                cancelar()
                 break
             case null:
-                alert('Operación cancelada. Retire su tarjeta')
-                continuar = false
+                cancelar()
                 break
             default:
                 alert('Ingrese una opción válida')
@@ -126,4 +130,35 @@ function menuPrincipal() {
     } while (continuar === true)
 }
 
-menuPrincipal()
+
+function accesoPrincipal() {
+    /* 
+    Por mejorar: corregir el comportamiento cuando se desea cancelar la operación durante el ingreso de id y password, se repite 3 veces. 
+    */
+
+    let id;
+    for (let i = 2; i >= 0; --i) {
+        id = prompt('Bienvenido. Ingrese número id de cliente')
+        if (id !== null && id !== '') {
+            let password = prompt('Ingrese su password')
+            if (accesoClientes.some((el) => el.id === id && el.password === password)) {
+                const cliente = listaClientes.find((el) => el.id === id)    
+                menuPrincipal(cliente)
+                return; // Salir de la función después de iniciar sesión
+            } else {
+                if (i === 0) {
+                    alert('Número id incorrecto. Intentos restantes: 0.\nSu tarjeta ha sido bloqueada')
+                    console.log('Número id incorrecto. Intentos restantes: 0.\nSu tarjeta ha sido bloqueada')
+                } else {
+                    console.log('Número id incorrecto. Intentos restantes: ' + i)
+                    alert('Número id incorrecto. Intentos restantes: ' + i)
+                }
+            }
+        } else {
+            cancelar() // Si el usuario cancela la operación, salir del ciclo
+        }
+    }
+}
+
+
+accesoPrincipal()
