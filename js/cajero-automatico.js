@@ -137,9 +137,9 @@ function accesoPrincipal() {
     */
 
     let id;
+    id = prompt('Bienvenido. Ingrese número id de cliente')
+    if (id !== null && id !== '') {
     for (let i = 2; i >= 0; --i) {
-        id = prompt('Bienvenido. Ingrese número id de cliente')
-        if (id !== null && id !== '') {
             let password = prompt('Ingrese su password')
             if (accesoClientes.some((el) => el.id === id && el.password === password)) {
                 const cliente = listaClientes.find((el) => el.id === id)    
@@ -154,9 +154,9 @@ function accesoPrincipal() {
                     alert('Número id incorrecto. Intentos restantes: ' + i)
                 }
             }
-        } else {
-            cancelar() // Si el usuario cancela la operación, salir del ciclo
         }
+    } else {
+        cancelar() // Si el usuario cancela la operación, salir del ciclo
     }
 }
 
