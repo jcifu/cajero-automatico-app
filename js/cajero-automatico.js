@@ -2,73 +2,73 @@
 const login = document.getElementById("login");
 let continuar = true;
 
-function cancelar() {
+let cancelar = () => {
     console.log("Cancelar operación");
     alert("Operación cancelada. Retire su tarjeta");
     sessionStorage.removeItem('cliente');
     continuar = false;
 }
 
-function consultarSaldo(idCuenta) {
+let consultarSaldo = (idCuenta) => {
     const saldo = idCuenta.saldo;
     console.log("Consulta saldo: " + saldo);
     alert("Su saldo es : $" + saldo);
 }
 
-function despedida() {
+let despedida = () => {
     console.log("Despedida");
     alert("Muchas gracias por preferir nuestro servicio. Hasta pronto.");
     continuar = false;
 }
 
-function noDisponible() {
+let noDisponible = () => {
     console.log("Función no disponible");
     alert("Función no disponible");
 }
 
-function cambiarClave(cliente) {
+let cambiarClave = (cliente) => {
     console.log("Cambiar clave");
-    nuevoPassword = prompt("Ingrese su nuevo número secreto"); //Validación clave numérica de 4 dígitos por implementar...
+    let nuevoPassword = prompt("Ingrese su nuevo número secreto"); //Validación clave numérica de 4 dígitos por implementar...
     if (id !== null && id !== "") cliente.password = nuevoPassword;
     else alert("Ingrese un número correcto");
     console.log(cliente.password);
     alert("Su número secreto ha sido cambiado con éxito.");
 }
 
-function girarDinero(idCuenta, montoGiro) {
+let girarRap = (idCuenta, giro) => {
     let saldo = idCuenta.saldo;
-    console.log("Saldo disponible: $" + saldo);
-    console.log("Monto a girar: $" + montoGiro);
-
-    if (montoGiro <= idCuenta.saldo && montoGiro > 0) {
-        //Giro rápido por 5000 
-        if (montoGiro === 5000) {
-            saldo -= montoGiro;
-            console.log("Giro por $" + montoGiro + ". Saldo restante: $" + saldo);
-            alert("Giro por $" + montoGiro + ". Saldo restante: $" + saldo + ". Retire su dinero y comprobante");
-        } else {
-            //Giro por otro monto 
-            //Se debe separar la funcionalidad de Giro Rápido del Giro por otro monto para poder ingresar el valor después de una validación rápida 
-            montoGiro = prompt("Ingrese monto a girar");
-            saldo -= montoGiro;
-            console.log("Giro por $" + montoGiro + ". Saldo restante: $" + saldo);
-            alert("Giro por $" + montoGiro + ". Saldo restante: $" + saldo + ". Retire su dinero y comprobante");
+    console.log("Giro Rápido: $" + giro);
+        if (giro === 5000) {
+            saldo -= giro;
+            console.log("Giro por $" + giro + ". Saldo restante: $" + saldo);
+            alert("Giro por $" + giro + ". Retire su dinero y comprobante");
         }
-    } else if (montoGiro === 0) alert("El monto a girar no puede ser $0.");
-    else
-        alert("Monto inválido. No puede exceder el saldo disponible ni ser menor a 0.");
+        return saldo;
+}
+
+let girarOtro = (idCuenta, giro) => {
+    let saldo = idCuenta.saldo;
+    giroMax = 250000; //giro máximo permitido
+    console.log("Giro por otro monto");
+    giro = prompt("Ingrese monto a girar");
+    if (giro <= idCuenta.saldo && giro <= giroMax && giro > 0) { 
+            saldo -= giro;
+            console.log("Giro por $" + giro + ". Saldo restante: $" + saldo);
+            alert("Giro por $" + giro + ". Retire su dinero y comprobante");
+        } else if(giro > giroMax) alert("Monto a girar no puede ser superior a $" + giroMax + ". Ingrese monto a girar nuevamente.");
+        else alert("Monto inválido. Ingrese monto a girar nuevamente.");
     return saldo;
 }
 
-function cuentaCorriente(cliente) {
-    let montoGiro;
+let cuentaCorriente = (cliente) => {
+    let giro;
     console.log("Cuenta Corriente ID: " + cliente.cuentaCorr.idCuenta);
     const menuCorr = document.createElement("div");
     document.body.appendChild(menuCorr);
     let menuCorrHTML = `
     <div>
             <button id="giroRap-btn" type="button">Giro rápido por $5000</button>
-            <button id="giroMonto-btn" type="button">Giro por otro monto</button>
+            <button id="giroOtro-btn" type="button">Giro por otro monto</button>
             <button id="saldo-btn" type="button">Consultar Saldo</button>
             <button id="salir-btn" type="button">Salir</button>
         </div>
@@ -76,20 +76,21 @@ function cuentaCorriente(cliente) {
     menuCorr.innerHTML = menuCorrHTML;
     menuCorr.id = "menuCorr";
     const giroRap = document.getElementById("giroRap-btn");
-    const giroMonto = document.getElementById("giroMonto-btn");
+    const giroOtro = document.getElementById("giroOtro-btn");
     const consultaSaldo = document.getElementById("saldo-btn");
     const salir = document.getElementById("salir-btn");
 
     //Giro rápido por $5000
     giroRap.addEventListener("click", () => {
-        montoGiro = 5000;
+        giro = 5000;
         document.getElementById("menuCorr").remove();
-        return girarDinero(cliente.cuentaCorr, montoGiro);
+        return girarRap(cliente.cuentaCorr, giro);
     });
     //Giro por otro monto
-    giroMonto.addEventListener("click", () => {
+    giroOtro.addEventListener("click", () => {
+        giro = undefined;
         document.getElementById("menuCorr").remove();
-        return girarDinero(cliente.cuentaCorr, parseInt(montoGiro));
+        return girarOtro(cliente.cuentaCorr, giro);
     });
     //Consultar Saldo
     consultaSaldo.addEventListener("click", () => {
@@ -103,7 +104,7 @@ function cuentaCorriente(cliente) {
     });
 }
 
-function nuevaOperacion(cliente) {
+let nuevaOperacion = (cliente) => {
     continuar = prompt("Desea realizar otra operación? \n 1: Sí \n 2: No");
     switch (continuar) {
         case "1":
@@ -125,7 +126,7 @@ function nuevaOperacion(cliente) {
     }
 }
 
-function menuPrincipal(cliente) {
+let menuPrincipal = (cliente) => {
     const menu = document.createElement("div");
     document.body.appendChild(menu);
     let menuHTML = `
@@ -164,16 +165,14 @@ function menuPrincipal(cliente) {
     });
 }
 
-function accesoPrincipal(event) {
+let accesoPrincipal = (event) => {
     event.preventDefault();
     const idCliente = document.getElementById("idCliente").value;
     const password = document.getElementById("password").value;
     const parent = login.parentNode;
     
     const clientes = JSON.parse(listaClientesJSON);
-    let cliente = clientes.find(
-        (el) => el.id === idCliente && el.password === password
-    );
+    let cliente = clientes.find((el) => el.id === idCliente && el.password === password);
 
     if (cliente) {
         parent.removeChild(login);
@@ -188,7 +187,6 @@ function accesoPrincipal(event) {
     } else {
         //Validacion por usuario invalido por implementar...
         // Máximo 3 intentos por implementar
-
         if (cliente) {
             alert("Acceso concedido cliente ID: " + cliente.id);
             console.log("Acceso concedido cliente ID: " + cliente.id);
