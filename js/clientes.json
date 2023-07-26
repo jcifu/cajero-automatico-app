@@ -1,0 +1,54 @@
+[
+    {
+      "id": "000001",
+      "nombre": "Javier",
+      "password": "123456",
+      "cuentaVista": {
+        "idCuenta": "000012",
+        "saldo": 400000
+      },
+      "cuentaCorr": {
+        "idCuenta": "800024",
+        "saldo": 750000
+      }
+    },
+    {
+      "id": "000002",
+      "nombre": "María",
+      "password": "654321",
+      "cuentaVista": {
+        "idCuenta": "000034",
+        "saldo": 100000
+      },
+      "cuentaCorr": {
+        "idCuenta": "800045",
+        "saldo": 250000
+      }
+    },
+    {
+      "id": "000003",
+      "nombre": "Pedro",
+      "password": "333333",
+      "cuentaVista": {
+        "idCuenta": "000056",
+        "saldo": 200000
+      },
+      "cuentaCorr": {
+        "idCuenta": "800067",
+        "saldo": 350000
+      }
+    },
+    {
+      "id": "000004",
+      "nombre": "Ana",
+      "password": "444444",
+      "cuentaVista": {
+        "idCuenta": "000078",
+        "saldo": 150000
+      },
+      "cuentaCorr": {
+        "idCuenta": "800089",
+        "saldo": 400000
+      }
+    }
+  ]
