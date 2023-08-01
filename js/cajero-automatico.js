@@ -365,11 +365,11 @@
 
     noBtn.addEventListener("click", () => {
       document.getElementById("nuevaOp").remove()
-      despedida(cliente)
+      despedida()
     })
   }
 
-  let despedida = (cliente) => {
+  let despedida = () => {
     console.log("Despedida")
     Swal.fire({
       icon: "success",
